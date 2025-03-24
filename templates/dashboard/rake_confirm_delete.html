@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }} - RMHS Dashboard{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-exclamation-triangle me-2"></i> {{ page_title }}
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-circle me-2"></i> Are you sure you want to delete the following rake report? This action cannot be undone.
+        </div>
+        
+        <div class="mb-4">
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Rake ID:</div>
+                <div class="col-md-9">{{ rake.rake_id }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Wagon Tippler:</div>
+                <div class="col-md-9">{{ rake.get_tippler_display }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Status:</div>
+                <div class="col-md-9">{{ rake.get_rake_status_display }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Rake Type:</div>
+                <div class="col-md-9">{{ rake.rake_type }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Material:</div>
+                <div class="col-md-9">{{ rake.rake_material }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">In Time:</div>
+                <div class="col-md-9">{{ rake.rake_in_time|date:"Y-m-d H:i" }}</div>
+            </div>
+            {% if rake.rake_completed_time %}
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Completed Time:</div>
+                <div class="col-md-9">{{ rake.rake_completed_time|date:"Y-m-d H:i" }}</div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash me-2"></i> Confirm Delete
+                </button>
+                <a href="{% url 'dashboard:rake_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-times me-2"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

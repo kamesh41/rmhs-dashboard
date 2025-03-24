@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }} - RMHS Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">{{ page_title }}</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-edit me-2"></i> Form
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="id_date" class="form-label">Date</label>
+                                {{ form.date }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_shift" class="form-label">Shift</label>
+                                {{ form.shift }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_area" class="form-label">Area</label>
+                                {{ form.area }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_material_name" class="form-label">Material</label>
+                                {{ form.material_name }}
+                            </div>
+                        </div>
+                        
+                        {% if form.destination_name %}
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_destination_name" class="form-label">Destination</label>
+                                {{ form.destination_name }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if form.source_name %}
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_source_name" class="form-label">Source</label>
+                                {{ form.source_name }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_quantity" class="form-label">Tonnage</label>
+                                {{ form.quantity }}
+                            </div>
+                        </div>
+                        
+                        {% if form.crushing_details %}
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_crushing_details" class="form-label">Crushing Details</label>
+                                {{ form.crushing_details }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_reported_by" class="form-label">Reported By</label>
+                                {{ form.reported_by }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_remarks" class="form-label">Remarks</label>
+                                {{ form.remarks }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-history me-2"></i> Recent Entries
+                </div>
+                <div class="card-body">
+                    {% if recent_entries %}
+                    <div class="list-group">
+                        {% for entry in recent_entries %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ entry.material.name }}</h6>
+                                <small>{{ entry.date }} - {{ entry.get_shift_display }}</small>
+                            </div>
+                            <p class="mb-1">{{ entry.quantity|floatformat:2 }} tons</p>
+                            <small>{{ entry.get_area_display }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-center">No recent entries found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

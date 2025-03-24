@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Login - RMHS Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Login</h4>
+                </div>
+                <div class="card-body">
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        Your username and password didn't match. Please try again.
+                    </div>
+                    {% endif %}
+
+                    {% if next %}
+                        {% if user.is_authenticated %}
+                        <div class="alert alert-info">
+                            Your account doesn't have access to this page. To proceed,
+                            please login with an account that has access.
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            Please login to view this page.
+                        </div>
+                        {% endif %}
+                    {% endif %}
+
+                    <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            <input type="text" name="username" id="id_username" class="form-control" autocomplete="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Password</label>
+                            <input type="password" name="password" id="id_password" class="form-control" autocomplete="current-password" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                        <input type="hidden" name="next" value="{{ next }}">
+                    </form>
+                </div>
+                <div class="card-footer text-muted">
+                    <!-- Uncomment if you want to add password reset link -->
+                    <!-- <a href="{% url 'password_reset' %}">Forgot your password?</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

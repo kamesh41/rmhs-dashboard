@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }} - RMHS Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-right: 15px;
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: white;
+    }
+    
+    .stat-content {
+        flex-grow: 1;
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        white-space: nowrap;
+    }
+    
+    .stat-label {
+        font-size: 1rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .bg-pending { background-color: #ffc107; }
+    .bg-progress { background-color: #0d6efd; }
+    .bg-complete { background-color: #198754; }
+    .bg-total { background-color: #6f42c1; }
+    
+    .pending-card { border-left: 5px solid #ffc107; }
+    .progress-card { border-left: 5px solid #0d6efd; }
+    .complete-card { border-left: 5px solid #198754; }
+    .total-card { border-left: 5px solid #6f42c1; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-train me-2"></i> {{ page_title }}
+        </h5>
+        <div>
+            <a href="{% url 'dashboard:rake_list' %}" class="btn btn-light btn-sm me-2">
+                <i class="fas fa-list me-1"></i> All Rakes
+            </a>
+            <a href="{% url 'dashboard:add_rake' %}" class="btn btn-light btn-sm">
+                <i class="fas fa-plus me-1"></i> Add Rake
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Rake Stats -->
+        <div class="row mb-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card pending-card">
+                    <div class="stat-icon bg-pending">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{ pending_rakes }}</div>
+                        <div class="stat-label">Pending Rakes</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card progress-card">
+                    <div class="stat-icon bg-progress">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{ in_progress_rakes }}</div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card complete-card">
+                    <div class="stat-icon bg-complete">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{ completed_rakes }}</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card total-card">
+                    <div class="stat-icon bg-total">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{ total_rakes }}</div>
+                        <div class="stat-label">Total Rakes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Material Summary -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cube me-2"></i> Material Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Material</th>
+                                        <th class="text-end">Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if material_summary %}
+                                        {% for material in material_summary %}
+                                        <tr>
+                                            <td>{{ material.rake_material }}</td>
+                                            <td class="text-end">{{ material.total_count }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="2" class="text-center">No data available</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock-rotate-left me-2"></i> Recent Rakes
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Rake ID</th>
+                                        <th>Tippler</th>
+                                        <th>Status</th>
+                                        <th>In Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if recent_rakes %}
+                                        {% for rake in recent_rakes %}
+                                        <tr>
+                                            <td><a href="{% url 'dashboard:edit_rake' rake.id %}">{{ rake.rake_id }}</a></td>
+                                            <td>{{ rake.get_tippler_display }}</td>
+                                            <td>
+                                                {% if rake.rake_status == 'Pending' %}
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                                {% elif rake.rake_status == 'Progress' %}
+                                                <span class="badge bg-primary">In Progress</span>
+                                                {% elif rake.rake_status == 'Complete' %}
+                                                <span class="badge bg-success">Complete</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ rake.rake_in_time|date:"Y-m-d H:i" }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="4" class="text-center">No recent rakes</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end mt-3">
+                            <a href="{% url 'dashboard:rake_list' %}" class="btn btn-primary btn-sm">View All</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

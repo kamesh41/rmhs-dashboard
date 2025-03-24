@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }} - RMHS Dashboard{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-train me-2"></i> {{ page_title }}
+        </h5>
+        <a href="{% url 'dashboard:add_rake' %}" class="btn btn-light btn-sm">
+            <i class="fas fa-plus me-1"></i> Add Rake
+        </a>
+    </div>
+    <div class="card-body">
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" name="date" id="date" class="form-control" value="{{ selected_date|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="">All Statuses</option>
+                            <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Progress" {% if selected_status == 'Progress' %}selected{% endif %}>In Progress</option>
+                            <option value="Complete" {% if selected_status == 'Complete' %}selected{% endif %}>Complete</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="tippler" class="form-label">Wagon Tippler</label>
+                        <select name="tippler" id="tippler" class="form-select">
+                            <option value="">All Tipplers</option>
+                            <option value="WT-1" {% if selected_tippler == 'WT-1' %}selected{% endif %}>WT-1</option>
+                            <option value="WT-2" {% if selected_tippler == 'WT-2' %}selected{% endif %}>WT-2</option>
+                            <option value="WT-3" {% if selected_tippler == 'WT-3' %}selected{% endif %}>WT-3</option>
+                            <option value="WT-4" {% if selected_tippler == 'WT-4' %}selected{% endif %}>WT-4</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <div class="d-grid gap-2 w-100">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter me-1"></i> Filter
+                            </button>
+                            <a href="{% url 'dashboard:rake_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i> Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="mb-3 d-flex justify-content-end">
+            <a href="{% url 'dashboard:export_rakes_excel' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-success me-2">
+                <i class="fas fa-file-excel me-1"></i> Export to Excel
+            </a>
+            <a href="{% url 'dashboard:export_rakes_pdf' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-danger">
+                <i class="fas fa-file-pdf me-1"></i> Export to PDF
+            </a>
+        </div>
+
+        <!-- Rakes Table -->
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>Rake ID</th>
+                        <th>Tippler</th>
+                        <th>In Time</th>
+                        <th>Completed Time</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Material</th>
+                        <th>Reported By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if rakes %}
+                        {% for rake in rakes %}
+                        <tr>
+                            <td>{{ rake.rake_id }}</td>
+                            <td>{{ rake.get_tippler_display }}</td>
+                            <td>{{ rake.rake_in_time|date:"Y-m-d H:i" }}</td>
+                            <td>{{ rake.rake_completed_time|date:"Y-m-d H:i"|default:"-" }}</td>
+                            <td>
+                                {% if rake.rake_status == 'Pending' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif rake.rake_status == 'Progress' %}
+                                <span class="badge bg-primary">In Progress</span>
+                                {% elif rake.rake_status == 'Complete' %}
+                                <span class="badge bg-success">Complete</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ rake.rake_type }}</td>
+                            <td>{{ rake.rake_material }}</td>
+                            <td>{{ rake.reported_by|default:"-" }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'dashboard:edit_rake' rake.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'dashboard:delete_rake' rake.id %}" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center">No rake reports found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 
