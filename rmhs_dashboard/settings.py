@@ -106,24 +106,23 @@ import dj_database_url
 from urllib.parse import urlparse
 
 # Get DATABASE_URL from environment
-db_url = os.environ.get('DATABASE_URL', '')
+# Database configuration
+import dj_database_url
 
-if db_url:
-    # Parse the URL
-    db_info = urlparse(db_url)
-    
+# Get the DATABASE_URL from environment variable
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    # Configure database with dj_database_url
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': db_info.path[1:],  # Remove leading slash
-            'USER': db_info.username,
-            'PASSWORD': db_info.password,
-            'HOST': db_info.hostname,
-            'PORT': db_info.port or '5432',
-        }
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=False
+        )
     }
 else:
-    # Fallback to SQLite
+    # Fallback to SQLite if DATABASE_URL is not set
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
