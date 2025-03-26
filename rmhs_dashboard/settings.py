@@ -31,8 +31,17 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# Updated ALLOWED_HOSTS to explicitly include Railway domain
+
 ALLOWED_HOSTS = ['web-production-30b70.up.railway.app', 'localhost', '127.0.0.1', '*']
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-30b70.up.railway.app',
+    'http://web-production-30b70.up.railway.app'
+]
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = False
 
 
 # Application definition
