@@ -28,11 +28,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-for-dev')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-# CSRF settings
-CSRF_TRUSTED_ORIGINS = ['https://web-production-30b70.up.railway.app', 'http://web-production-30b70.up.railway.app']
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
+# Updated ALLOWED_HOSTS to explicitly include Railway domain
+ALLOWED_HOSTS = ['web-production-30b70.up.railway.app', 'localhost', '127.0.0.1', '*']
 
 
 # Application definition
