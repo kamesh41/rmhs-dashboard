@@ -110,19 +110,24 @@ from urllib.parse import urlparse
 import dj_database_url
 
 # Get the DATABASE_URL from environment variable
+# Database configuration
+import dj_database_url
+
+# Database
+# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
+# Get DATABASE_URL from environment
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
-    # Configure database with dj_database_url
+    # Parse database URL directly
     DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=False
-        )
+        'default': {
+            **dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+        }
     }
 else:
-    # Fallback to SQLite if DATABASE_URL is not set
+    # Fallback to SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
