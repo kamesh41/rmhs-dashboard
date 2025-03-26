@@ -99,13 +99,37 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # Use SQLite for simplicity in deployment
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# Database
+# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+import dj_database_url
+from urllib.parse import urlparse
+
+# Get DATABASE_URL from environment
+db_url = os.environ.get('DATABASE_URL', '')
+
+if db_url:
+    # Parse the URL
+    db_info = urlparse(db_url)
+    
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': db_info.path[1:],  # Remove leading slash
+            'USER': db_info.username,
+            'PASSWORD': db_info.password,
+            'HOST': db_info.hostname,
+            'PORT': db_info.port or '5432',
+        }
+    }
+else:
+    # Fallback to SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
